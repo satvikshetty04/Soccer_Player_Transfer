@@ -1,6 +1,6 @@
 Abstract
 
-Player transfers in Soccer is an important contributing aspect to a team's success. In this project, we analyze a European Soccer Database with information about players, teams and matches spanning across the top 11 leagues. After sampling and handling missing data, we use t-SNE for dimensionality reduction which is then fed to KMeans algorithm to classify the players into 4 distinct clusters. After calculating the weak link in a team, we would then use KNN on the overall ratings as a naive algorithm to predict players at a similar level to that of the team and finally use a more refined version of KNN using additional parameters to compare our results. 
+Player transfers in Soccer is an important contributing aspect to a team's success. In this project, we analyze a European Soccer Database with information about players, teams and matches spanning across the top 11 leagues. After sampling and handling missing data, we use t-SNE for dimensionality reduction which is then fed to KMeans algorithm to classify the players into 4 distinct clusters. After calculating the weak link in a team, we would then use KNN on the overall ratings as a naive (baseline) algorithm to predict players at a similar level to that of the team. A more refined version involves analysing each player skill relevant to his own field position and comparing that with the skills needed by the team to find a more suitable candidate for replacement. 
 
 Introduction
 
@@ -8,7 +8,15 @@ Soccer is a highly popular sport across the globe with full-fledged leagues and 
 
 Player Transfers in Soccer is a highly complex task of identifying the weak areas in a team (defense, attack, midfiled) that need to be strengthened, then identifying specific player(s) to be replaced(who are not upto the team standards) and finally finding a suitable replacement who can prove to be an improvement - all this while considering a player who would fit the budget and are within the reach of the team in question.
 
-While most Data Analysis techniques applied in the field of Soccer tend to be around predicting match winners and league winners (used by the betting industry), this particular project concentrates on building a model that suggests appropriate player transfers (intended to be being used by the team managements) that would help improve the team. This project uses a comprehensive soccer database which documents information across the top 11 European soccer leagues. 
+While most Data Analysis techniques applied in the field of Soccer tend to be around predicting match winners and league winners (used by the betting industry), this particular project concentrates on building a model that suggests appropriate player transfers (intended to be being used by the team managements) that would help improve the team. This project uses a comprehensive soccer database which documents information across the top 11 European soccer leagues from 2008-2016. The data from all those years is used for classification of players. But, for analysing the weakness of the teams, we use 2013-15 seasons' data so as to have a more pertinent information about players and the teams in order to predict the player transfers for the 2015-16 season. The data from this season can be used to verify/validate our prediction and hence analyse the effectiveness of our model.
+
+Method
+
+Data cleaning
+
+The original data set contained possibly every aspect of the matches that were recorded. This means a lot of information with in that was not relevant to our purpose. For example, we removed the 'height' and 'weight' fields from the 'player' table, because that is not necessary to acheive to our goal.	
+
+Another aspect of data cleaning involved removal of those tuples from the 'match' table which had null entries for any of the player id and playing positions. Below presented is the data set which is obtained after the data cleaning process.
 
 
 Data set
@@ -27,3 +35,8 @@ Data set
    Rows = 183978, Columns = 41
 7. Player_xy: Most frequent starting position (XY co-ordinates) for each player.
    Rows = 11060, Columns = 3
+
+
+Sampling
+
+As mentioned previously in the introduction, we use the complete data set to classify players into different field positions. But we sample data only from 2013-16 and map the players to their respective teams for these three seasons. From this we find weaknesses in teams in 2013-15, in order to predict player transfers for the 2015-16 season. This sampling is made to keep have the latest team details and existant weaknesses in the teams.
