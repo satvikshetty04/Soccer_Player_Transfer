@@ -1,0 +1,29 @@
+Abstract
+
+Player transfers in Soccer is an important contributing aspect to a team's success. In this project, we analyze a European Soccer Database with information about players, teams and matches spanning across the top 11 leagues. After sampling and handling missing data, we use t-SNE for dimensionality reduction which is then fed to KMeans algorithm to classify the players into 4 distinct clusters. After calculating the weak link in a team, we would then use KNN on the overall ratings as a naive algorithm to predict players at a similar level to that of the team and finally use a more refined version of KNN using additional parameters to compare our results. 
+
+Introduction
+
+Soccer is a highly popular sport across the globe with full-fledged leagues and increased competition with every passing year. The teams in these league are not only professional sport teams, but also a buisness venture for the owners who expect the best possible return(performance) on investment. To remain competitive, the team dynamics has to be continually improved upon. One of the most common ways to do this is through player transfers.
+
+Player Transfers in Soccer is a highly complex task of identifying the weak areas in a team (defense, attack, midfiled) that need to be strengthened, then identifying specific player(s) to be replaced(who are not upto the team standards) and finally finding a suitable replacement who can prove to be an improvement - all this while considering a player who would fit the budget and are within the reach of the team in question.
+
+While most Data Analysis techniques applied in the field of Soccer tend to be around predicting match winners and league winners (used by the betting industry), this particular project concentrates on building a model that suggests appropriate player transfers (intended to be being used by the team managements) that would help improve the team. This project uses a comprehensive soccer database which documents information across the top 11 European soccer leagues. 
+
+
+Data set
+
+1. Country. 
+   Rows = 11, Columns = 2
+2. League: Contains the league name and country in which it exists. 
+   Rows = 11, Columns = 3
+3. Match_info: Contains match statistics, starting co-orinates of all 11 players in each team. 
+   Rows = 24158, Columns = 85
+4. Player: Contains name and birthday information.
+   Rows = 11060, Columns = 4
+5. PlayerTeam: Season-wise mapping of each player to a team.
+   Rows = 13686, Columns = 5
+6. Player_Attributes: Season-wise statistics of player skills.
+   Rows = 183978, Columns = 41
+7. Player_xy: Most frequent starting position (XY co-ordinates) for each player.
+   Rows = 11060, Columns = 3
