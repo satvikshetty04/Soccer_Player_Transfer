@@ -19,13 +19,11 @@ from bokeh.io import output_notebook
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-database = './data/database.sqlite'
+database = './database.sqlite'
 conn = sqlite3.connect(database)
 
 query = "SELECT name FROM sqlite_master WHERE type='table';"
 pd.read_sql(query, conn)
-
 
 query = "SELECT * FROM Player;"
 a = pd.read_sql(query, conn)
@@ -45,7 +43,7 @@ drop_cols = ['id','date','preferred_foot',
 
 players = pd.read_sql(query, conn)
 players['date'] = pd.to_datetime(players['date'])
-players = players[players.date > pd.datetime(2015,1,1)]
+players = players[players.date > pd.datetime(2013,1,1)]
 players = players[~players.overall_rating.isnull()].sort('date', ascending=False)
 players = players.drop_duplicates(subset='player_api_id')
 players = players.drop(drop_cols, axis=1)
@@ -64,7 +62,7 @@ tsne_comp = model.fit_transform(tmp)
 
 tmp = players[cols]
 tmp['comp1'], tmp['comp2'] = tsne_comp[:,0], tsne_comp[:,1]
-tmp = tmp[tmp.overall_rating >= 80]
+tmp = tmp[tmp.overall_rating >= 60]
 
 _tools = 'box_zoom,pan,save,resize,reset,tap,wheel_zoom'
 fig = figure(tools=_tools, title='t-SNE of Players (FIFA stats)', responsive=True,
@@ -84,41 +82,37 @@ X1 = np.vstack((X2,Y2)).T
 X1.ndim
 X1.shape
 
-kmeans1 = KMeans(n_clusters=4)
-kmeans1.fit(X1)
-centroids = kmeans1.cluster_centers_
-labels = kmeans1.labels_
 
-print(centroids)
+X1 = StandardScaler().fit_transform(X1)
 
-colors = ["g.","r.","y.","c.","b."]
+db = DBSCAN(eps=0.3, min_samples=10).fit(X1)
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
 
-for i in range(len(X1)):
-    print("Coordinate:",X1[i],"Label:", labels[i])
-    plt.plot(X1[i][0],X1[i][1],colors[labels[i]], markersize = 10)
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 
-def count_sort(arr,k):
-    n = k + 1
-    c = [0] * n
+print('Estimated number of clusters: %d' % n_clusters_)
 
-    for j in arr:
-        c[j] = c[j] + 1
 
-    return c
+# Black removed and is used for noise instead.
+unique_labels = set(labels)
+colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
+for k, col in zip(unique_labels, colors):
+    if k == -1:
+        # Black used for noise.
+        col = 'k'
 
-count_sort(labels,3)
+    class_member_mask = (labels == k)
 
-plt.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=150, linewidth = 5, zorder = 10)
+    xy = X1[class_member_mask & core_samples_mask]
+    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+             markeredgecolor='k', markersize=14)
+
+    xy = X1[class_member_mask & ~core_samples_mask]
+    plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+             markeredgecolor='k', markersize=6)
+
+plt.title('Estimated number of clusters: %d' % n_clusters_)
 plt.show()
-
-
-
-source = ColumnDataSource(tmp)
-hover = HoverTool()
-hover.tooltips=[('Player','@player_name'),]
-fig.scatter(tmp['comp1'], tmp['comp2'], source=source, size=8, alpha=0.6,
-            line_color='red', fill_color='red')
-
-fig.add_tools(hover)
-
-show(fig)
