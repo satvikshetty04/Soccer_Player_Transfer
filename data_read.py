@@ -33,14 +33,14 @@ for team in teams:
             else:
                 player_positions[row[0]][(row[1], row[2])] += 1
 
-        for player in player_positions:
-            max = 0
-            max_tuple = (0, 0)
-            for tuple in player_positions[player]:
-                if player_positions[player][tuple] > max:
-                    max = player_positions[player][tuple]
-                    max_tuple = tuple
-            query = "INSERT INTO Player_xy VALUES (" + str(player) + ", " + str(max_tuple[0]) + ", " + str(max_tuple[1]) + ");"
-            cur.execute(query)
+for player in player_positions:
+    max = 0
+    max_tuple = (0, 0)
+    for tuple in player_positions[player]:
+        if player_positions[player][tuple] > max:
+            max = player_positions[player][tuple]
+            max_tuple = tuple
+    query = "INSERT INTO Player_xy VALUES (" + str(player) + ", " + str(max_tuple[0]) + ", " + str(max_tuple[1]) + ");"
+    cur.execute(query)
 
 conn.commit()

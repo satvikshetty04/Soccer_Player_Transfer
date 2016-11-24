@@ -17,7 +17,7 @@ conn = sqlite3.connect(database)
 query = """SELECT * FROM Player_Attributes a
            INNER JOIN (SELECT player_name, player_api_id AS p_id FROM Player) b ON a.player_api_id = b.p_id;"""
 
-drop_cols = ['id','player_fifa_api_id','date','preferred_foot',
+drop_cols = ['id','date','preferred_foot',
              'attacking_work_rate','defensive_work_rate']
 
 players = pd.read_sql(query, conn)
