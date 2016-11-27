@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 import sys
 
-database = './data/database2.sqlite'
+database = './data/database.sqlite'
 conn = sqlite3.connect(database)
 cur = conn.cursor()
 player_field_pos = {}
