@@ -45,7 +45,7 @@ def get_player_stats(player_id, field_pos):
     return player_stat/skill_count[field_pos]
 
 def get_weak_player(team):
-    result = cur.execute("SELECT player_api_id, team_api_id from PlayerTeamMod where team_api_id = " + str(team) + " AND season = '2013/2014' order by team_api_id;")
+    result = cur.execute("SELECT player_api_id from PlayerTeamMod where team_api_id = " + str(team) + " AND season = '2013/2014' order by team_api_id;")
     player_list = {}
     for row in result:
         player_list[row[0]] = []
