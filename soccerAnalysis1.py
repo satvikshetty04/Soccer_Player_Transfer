@@ -10,6 +10,7 @@ from sklearn.preprocessing import StandardScaler
 from bokeh.plotting import figure, ColumnDataSource, show
 from bokeh.models import HoverTool
 import numpy as np
+import scipy as sp
 from pylab import plot,show
 from numpy import vstack,array
 from numpy.random import rand
@@ -131,15 +132,69 @@ def clusteringKMeans(XVal):
 tmp, X10 = tsneDimReduction(80)
 kmeans1, plt, labels = clusteringKMeans(X10)
 
-def count_sort(arr,k):
-    n = k + 1
-    c = [0] * n
+def clusteringDBSCAN(XVal): 
+    XVal = StandardScaler().fit_transform(XVal)
 
-    for j in arr:
-        c[j] = c[j] + 1
+    db = DBSCAN(eps=0.3, min_samples=10).fit(XVal)
+    core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+    core_samples_mask[db.core_sample_indices_] = True
+    labels = db.labels_
 
-    return c
+    # Number of clusters in labels, ignoring noise if present.
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
 
+    print('Estimated number of clusters: %d' % n_clusters_)
+
+
+    # Black removed and is used for noise instead.
+    unique_labels = set(labels)
+    colors = plt.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
+    for k, col in zip(unique_labels, colors):
+        if k == -1:
+            # Black used for noise.
+            col = 'k'
+
+        class_member_mask = (labels == k)
+
+        xy = XVal[class_member_mask & core_samples_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+                markeredgecolor='k', markersize=14)
+
+        xy = XVal[class_member_mask & ~core_samples_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=col,
+                markeredgecolor='k', markersize=6)
+
+    plt.title('Estimated number of clusters: %d' % n_clusters_)
+    
+    return db
+
+db = clusteringDBSCAN(X10)
+
+def dbscan_predict(dbscan_model, player_id, metric=sp.spatial.distance.cosine):
+    X2 = np.array(playerTsnePos[player_id][0])
+    X2.ndim
+    X2.shape
+    Y2 = np.array(playerTsnePos[player_id][1])
+    Y2.ndim
+    Y2.shape
+
+    X_new = np.vstack((X2,Y2)).T
+    X_new.ndim
+    X_new.shape
+    # Result is noise by default
+    y_new = np.ones(shape=len(X_new), dtype=int)*-1 
+
+    # Find a core sample closer than EPS
+    for i, x_core in enumerate(dbscan_model.components_): 
+        if metric(X_new, x_core) < dbscan_model.eps:
+            # Assign label of x_core to x_new
+            y_new = dbscan_model.labels_[dbscan_model.core_sample_indices_[i]]
+            break
+
+    return y_new
+
+
+#dbscan_predict(soccerAnalysis1.db,player_id)
 #count_sort(labels,3)
 
 #plt.show()

@@ -80,7 +80,7 @@ def get_player_stats(player_id, field_pos):
     return player_stat/skill_count[field_pos]
 
 def get_weak_player(team): 
-    result = cur.execute("SELECT player_api_id, team_api_id from PlayerTeamMod where team_api_id = " + str(team) + " AND season = '2013/2014' order by team_api_id;")
+    result = cur.execute("SELECT ptm.player_api_id, ptm.team_api_id from PlayerTeamMod ptm, Player p, Player_Attributes pa where p.player_api_id = ptm.player_api_id AND pa.player_api_id = p.player_api_id AND p.birthday < \'1995-01-01 00:00:00\' AND ptm.team_api_id = " + str(team) + " AND ptm.season = '2013/2014' AND pa.date > \'2013-06-30\' order by ptm.team_api_id;")
     player_list = {}
     for row in result:
         player_list[row[0]] = []
@@ -96,7 +96,6 @@ def get_weak_player(team):
         field_pos = DT_classifier.get_field_position(player_id)
         player_stat = get_player_stats(player_id, field_pos)
         player_list[player_id] = [field_pos, player_stat]
-
         if field_pos == 0:                               # attack
             team_attack += player_stat
             team_attack_count += 1
@@ -113,14 +112,14 @@ def get_weak_player(team):
 
     if team_attack > team_midfield:
         min_field = 2
-        min = team_midfield
+        min1 = team_midfield
     else:
         min_field = 0
-        min = team_attack
+        min1 = team_attack
 
-    if team_defense < min:
+    if team_defense < min1:
         min_field = 3
-        min = team_defense
+        min1 = team_defense
 
     min_stat = 100
     for player_id in player_list:
@@ -128,13 +127,13 @@ def get_weak_player(team):
             min_stat = player_list[player_id][1]
             min_player = player_id
 
-    print (str(team) + " : " +str(min_player)+" : "+str(team_attack)+" : "+str(team_midfield)+" : "+str(team_defense) )
+    print (str(team) + " : " +str(min_player)+" : "+str(min1) )
     return (min_player, player_list[min_player][0])
  
 def knnPrediction(param1, param2):
     return 1
 def main():
-    result = cur.execute("SELECT DISTINCT team_api_id from PlayerTeamMod;")
+    result = cur.execute("SELECT DISTINCT team_api_id from PlayerTeamMod where season = '2013/2014';")
     for team in result:
         teams.append(team[0])
     playerWeakTeam = {}

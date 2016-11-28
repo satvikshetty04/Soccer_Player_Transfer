@@ -15,21 +15,21 @@ for player in result:
     if y == 1:                  # Goal Keeper
         player_class = 1
     elif y > 1 and y < 5:       # Defense
-        player_class = 2
+        player_class = 3
     elif y >= 5 and y <= 6:     # Defensive-mid
-        player_class = 2
+        player_class = 3
     elif y == 7:
         if x >= 4 and x <= 6:   # Defensive-mid
-            player_class = 2
+            player_class = 3
         elif x == 7:            # Midfielder
-            player_class = 3
+            player_class = 2
         else:                   # Attacking-mid
-            player_class = 3
+            player_class = 2
     elif y >= 8 and y <= 9:     # Attacking-mid
-        player_class = 3
+        player_class = 2
     elif y >= 10:
         if x < 4 or x >= 7:     # Attacking-mid
-            player_class = 3
+            player_class = 2
         else:                   # Attack
             player_class = 0
 
